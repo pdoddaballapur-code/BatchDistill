@@ -32,8 +32,8 @@ vle_interp = interp1d(x_vle, y_vle, kind='cubic',
 # ═══════════════════════════════════════════════════════════════════════════════
 R        = 5
 N_TRAYS  = 11
-EMV_TRAY = 0.50    # Murphree efficiency for the 10 column trays
-EMV_REB  = 0.686   # Murphree efficiency for the reboiler (from lab data)
+EMV_TRAY = 0.325   # Murphree efficiency for the 10 column trays
+EMV_REB  = 0.625   # Murphree efficiency for the reboiler (from lab data)
 N_ACTUAL = 11      # 10 trays + 1 reboiler
 EMV      = EMV_TRAY  # alias used in N_THEOR calc
 EFF      = EMV_TRAY  # overall tray efficiency for reporting
@@ -301,107 +301,4 @@ ax1.text(0.04, 0.96, 'A', transform=ax1.transAxes,
          fontsize=16, fontweight='bold', va='top', ha='left')
 
 plt.tight_layout()
-plt.savefig('/mnt/user-data/outputs/rayleigh_mccabe_thiele.png',
-            dpi=1200, bbox_inches='tight', facecolor='white')
-print("Saved: rayleigh_mccabe_thiele.png")
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  PLOT B — Rayleigh integrand
-# ═══════════════════════════════════════════════════════════════════════════════
-fig2, ax2 = plt.subplots(figsize=(7, 5))
-fig2.patch.set_facecolor('white')
-
-ax2.plot(xW_arr, integrand, color='#2166ac', lw=2.0)
-ax2.fill_between(xW_arr, integrand, alpha=0.15, color='#2166ac',
-                 label=f'Area = ln($F_0/F_f$) = {ln_F0_over_F[-1]:.4f}')
-
-ax2.set_xlabel('$x_W$ (still-pot mole fraction MeOH)', fontsize=12)
-ax2.set_ylabel(r'$1\,/\,(x_D^* - x_W)$', fontsize=12)
-ax2.invert_xaxis()
-ax2.xaxis.set_major_locator(MultipleLocator(0.05))
-ax2.xaxis.set_minor_locator(MultipleLocator(0.01))
-ax2.yaxis.set_major_locator(MultipleLocator(5))
-ax2.yaxis.set_minor_locator(MultipleLocator(1))
-ax2.tick_params(axis='both', which='major', length=6, width=1.0, labelsize=10, direction='in')
-ax2.tick_params(axis='both', which='minor', length=3, width=0.7, direction='in')
-ax2.tick_params(top=True, right=True, which='both')
-ax2.grid(False)
-ax2.set_facecolor('white')
-ax2.spines[['top','right','bottom','left']].set_linewidth(1.0)
-ax2.legend(fontsize=9, loc='upper left', framealpha=0.9)
-ax2.text(0.04, 0.96, 'B', transform=ax2.transAxes,
-         fontsize=16, fontweight='bold', va='top', ha='left')
-
-plt.tight_layout()
-plt.savefig('/mnt/user-data/outputs/rayleigh_integrand.png',
-            dpi=1200, bbox_inches='tight', facecolor='white')
-print("Saved: rayleigh_integrand.png")
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  PLOTS C & D — Composition profiles and distillate collected
-# ═══════════════════════════════════════════════════════════════════════════════
-frac_dist = D_arr / F0
-
-fig3, (ax3a, ax3b) = plt.subplots(1, 2, figsize=(13, 5))
-fig3.patch.set_facecolor('white')
-
-# C: compositions vs fraction distilled
-ax3a.plot(frac_dist, xD_arr,     color='#2166ac', lw=2.0, label='Instantaneous $x_D$')
-ax3a.plot(frac_dist, xW_arr,     color='#d6604d', lw=2.0, label='Still-pot $x_W$')
-ax3a.plot(frac_dist, xD_avg_arr, color='#4dac26', lw=2.0, linestyle='--',
-          label='Cumulative avg $\\bar{x}_D$')
-
-ax3a.scatter([frac_dist[-1]], [xD_avg],  color='#4dac26', s=75, zorder=5)
-ax3a.scatter([frac_dist[-1]], [xW_final],color='#d6604d', s=75, marker='s', zorder=5)
-ax3a.annotate(f'$\\bar{{x}}_D$ = {xD_avg:.3f}',
-              xy=(frac_dist[-1], xD_avg),
-              xytext=(frac_dist[-1]-0.06, xD_avg+0.06),
-              fontsize=8.5, color='#4dac26', ha='right',
-              arrowprops=dict(arrowstyle='->', color='#4dac26', lw=0.8))
-ax3a.annotate(f'$x_{{W,f}}$ = {xW_final:.3f}',
-              xy=(frac_dist[-1], xW_final),
-              xytext=(frac_dist[-1]-0.06, xW_final-0.07),
-              fontsize=8.5, color='#d6604d', ha='right',
-              arrowprops=dict(arrowstyle='->', color='#d6604d', lw=0.8))
-
-ax3a.set_xlim(0, max(frac_dist)*1.05)
-ax3a.set_ylim(0, 1)
-ax3a.set_xlabel('Fraction of charge distilled  ($D/F_0$)', fontsize=11)
-ax3a.set_ylabel('Mole fraction MeOH', fontsize=11)
-ax3a.xaxis.set_major_locator(MultipleLocator(0.1))
-ax3a.xaxis.set_minor_locator(MultipleLocator(0.025))
-ax3a.yaxis.set_major_locator(MultipleLocator(0.2))
-ax3a.yaxis.set_minor_locator(MultipleLocator(0.05))
-ax3a.tick_params(axis='both', which='major', length=6, width=1.0, labelsize=9, direction='in')
-ax3a.tick_params(axis='both', which='minor', length=3, width=0.7, direction='in')
-ax3a.tick_params(top=True, right=True, which='both')
-ax3a.grid(False)
-ax3a.set_facecolor('white')
-ax3a.spines[['top','right','bottom','left']].set_linewidth(1.0)
-ax3a.legend(fontsize=8.5, loc='upper right', framealpha=0.9)
-ax3a.text(0.04, 0.96, 'C', transform=ax3a.transAxes,
-          fontsize=16, fontweight='bold', va='top', ha='left')
-
-# D: distillate moles collected vs xW
-ax3b.plot(xW_arr, D_arr, color='#7b2d8b', lw=2.0)
-ax3b.scatter([xW_final], [D_total], color='#7b2d8b', s=75, zorder=5,
-             label=f'$D_{{total}}$ = {D_total:.3f} mol  ({V_distillate:.1f} mL)\n'
-                   f'$x_{{W,f}}$ = {xW_final:.4f}')
-ax3b.invert_xaxis()
-ax3b.set_xlabel('Still-pot composition $x_W$  (mol frac MeOH)', fontsize=11)
-ax3b.set_ylabel('Cumulative distillate collected  (mol)', fontsize=11)
-ax3b.xaxis.set_major_locator(MultipleLocator(0.05))
-ax3b.xaxis.set_minor_locator(MultipleLocator(0.01))
-ax3b.yaxis.set_minor_locator(MultipleLocator(0.1))
-ax3b.tick_params(axis='both', which='major', length=6, width=1.0, labelsize=9, direction='in')
-ax3b.tick_params(axis='both', which='minor', length=3, width=0.7, direction='in')
-ax3b.tick_params(top=True, right=True, which='both')
-ax3b.grid(False)
-ax3b.set_facecolor('white')
-ax3b.spines[['top','right','bottom','left']].set_linewidth(1.0)
-ax3b.legend(fontsize=8.5, loc='upper right', framealpha=0.9)
-ax3b.text(0.04, 0.96, 'D', transform=ax3b.transAxes,
-          fontsize=16, fontweight='bold', va='top', ha='left')
-
-plt.tight_layout(w_pad=3.0)
 plt.show()
